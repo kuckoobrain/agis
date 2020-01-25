@@ -8,43 +8,53 @@
     :headers="headers"
     :items="campaigns"
     class="elevation-1"
-  ></v-data-table>
+  >
+  <template v-slot:item.id="{ item }">
+    <v-tooltip bottom>
+      <template v-slot:activator="{ on }">
+        <v-btn text icon color="primary" to="/" v-on="on">
+          <v-icon>mdi-magnify</v-icon>
+        </v-btn>
+      </template>
+      <span>Kampagne {{ item.intern_id }} öffnen</span>
+    </v-tooltip>
+  </template>
+  </v-data-table>
 </div>
 </template>
 
 <script>
+import { mapState } from "vuex"
+
 export default {
   data() {
     return {
       footerProps: {
         'items-per-page-options': [10, 50, 100]
       },
-      headers: [{
+      headers: [
+        {
           text: '',
           value: 'id',
         },
         {
           text: 'InternID',
-          value: 'internid'
+          value: 'intern_id'
         },
         {
-          text: 'Betreff',
-          value: 'subject'
-        }
-      ],
-      campaigns: [
-        {
-          id: 1,
-          internid: '20001',
-          subject: 'Re: Ihr Kredit'
+          text: 'Kampagnenname',
+          value: 'name'
         },
         {
-          id: 2,
-          internid: '20002',
-          subject: 'Wie viel ist Ihre Immobilie wert?'
+          text: 'Erstellt',
+          value: 'ts_created'
         }
       ],
     }
   },
+  mounted() {
+    this.$store.dispatch('loadCampaigns');
+  },
+  computed: mapState(["campaigns"])
 }
 </script>
