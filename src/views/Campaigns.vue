@@ -9,22 +9,37 @@
     :items="campaigns"
     class="elevation-1"
   >
+
   <template v-slot:item.id="{ item }">
-    <v-tooltip bottom>
+    <v-menu offset-y>
       <template v-slot:activator="{ on }">
-        <v-btn text icon color="primary" to="/" v-on="on">
+        <v-btn text icon color="primary" v-on="on">
           <v-icon>mdi-magnify</v-icon>
         </v-btn>
       </template>
-      <span>Kampagne {{ item.intern_id }} öffnen</span>
-    </v-tooltip>
+      <v-list>
+        <v-list-item link to="/">
+          <v-list-item-icon>
+            <v-icon color="primary">mdi-pencil</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>Bearbeiten</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-menu>
   </template>
+
+  <template v-slot:item.ts_created="{ item }">
+    {{ createdTs }}
+  </template>
+
   </v-data-table>
 </div>
 </template>
 
 <script>
-import { mapState } from "vuex"
+import moment from 'moment';
 
 export default {
   data() {
@@ -50,11 +65,24 @@ export default {
           value: 'ts_created'
         }
       ],
+      on: "",
     }
   },
-  mounted() {
+  created() {
     this.$store.dispatch('loadCampaigns');
   },
-  computed: mapState(["campaigns"])
+  methods: {
+    formatTs(ts) {
+      return moment(ts).format('DD.MM.YYYY HH:mm:ss');
+    }
+  },
+  computed: {
+    campaigns: function() {
+      return this.$store.state.campaigns
+    },
+    createdTs: function() {
+      return moment(this.$store.state.campaigns.ts_created).format('DD.MM.YYYY HH:mm:ss');
+    }
+  }
 }
 </script>
